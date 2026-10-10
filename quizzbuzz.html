@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Buzz | Choose Your Topic</title>
+
+<style>
+
+/* =========================
+   BASIC SETTINGS
+========================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f3f7f7;
+    color:#1f2937;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    background:linear-gradient(135deg,#134e4a,#0f766e);
+    color:white;
+    padding:20px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:bold;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:20px;
+    font-weight:bold;
+}
+
+nav a:hover{
+    color:#ffd54f;
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+.hero{
+    min-height:350px;
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+    background:#134e4a;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+    color:white;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:
+    linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),
+    url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTavOeQRIf6QW6A8YkpjTD5NywF0EffYAmwrls5FUBtFg&s=10");
+    background-size:cover;
+    background-position:center;
+    animation:heroImageZoom 18s ease-in-out infinite alternate;
+}
+
+@keyframes heroImageZoom{
+    from{transform:scale(1);}
+    to{transform:scale(1.12);}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .hero::before{animation:none;}
+}
+
+.hero h1{
+    font-size:48px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:20px;
+    margin-bottom:25px;
+}
+
+.start-btn{
+    padding:14px 30px;
+    border:none;
+    border-radius:8px;
+    background:#7c3aed;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.start-btn:hover{
+    background:#6d28d9;
+}
+
+.start-btn:disabled{
+    cursor:not-allowed;
+    opacity:.55;
+    transform:none;
+}
+
+
+/* =========================
+   QUIZ SECTION
+========================= */
+
+#topicSection{
+    display:none;
+    max-width:1100px;
+    margin:40px auto;
+    padding:20px;
+}
+
+.topic-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+    text-align:center;
+}
+
+.topic-box h2{
+    color:#0f766e;
+    margin-bottom:10px;
+}
+
+.topic-box > p{
+    color:#666;
+    margin-bottom:25px;
+}
+
+.topic-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.topic-card{
+    overflow:hidden;
+    padding:0;
+    border:2px solid transparent;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 3px 12px rgba(0,0,0,.12);
+    color:#1f2937;
+    text-align:left;
+    cursor:pointer;
+    transition:transform .2s, border-color .2s, box-shadow .2s;
+}
+
+.topic-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 7px 18px rgba(0,0,0,.16);
+}
+
+.topic-card.selected{
+    border-color:#7c3aed;
+    box-shadow:0 0 0 3px rgba(124,58,237,.18);
+}
+
+.topic-card img{
+    display:block;
+    width:100%;
+    height:145px;
+    object-fit:cover;
+}
+
+.topic-card span{
+    display:block;
+    padding:15px 12px;
+    font-weight:bold;
+}
+
+.topic-card:focus-visible{
+    outline:3px solid #7c3aed;
+    outline-offset:3px;
+}
+
+@media(max-width:800px){
+    .topic-grid{grid-template-columns:repeat(2,1fr);}
+}
+
+@media(max-width:450px){
+    .topic-grid{grid-template-columns:1fr;}
+    .topic-card img{height:180px;}
+}
+
+#quizSection{
+    display:none;
+    max-width:1000px;
+    margin:40px auto;
+    padding:20px;
+}
+
+
+/* QUIZ HEADER */
+
+.quiz-header{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.quiz-title h2{
+    color:#0f766e;
+}
+
+.quiz-title p{
+    color:#666;
+    margin-top:5px;
+}
+
+.timer{
+    background:#dc2626;
+    color:white;
+    padding:12px 20px;
+    border-radius:8px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-container{
+    background:#ddd;
+    height:10px;
+    border-radius:10px;
+    margin-bottom:25px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:#7c3aed;
+    transition:.3s;
+}
+
+
+/* =========================
+   QUESTIONS
+========================= */
+
+.question-card{
+    background:white;
+    padding:25px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.1);
+}
+
+.question-number{
+    color:#0f766e;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.question{
+    font-size:19px;
+    font-weight:bold;
+    margin-bottom:18px;
+    line-height:1.5;
+}
+
+
+/* OPTIONS */
+
+.option{
+    display:block;
+    padding:13px;
+    margin:10px 0;
+
+    border:1px solid #ddd;
+    border-radius:8px;
+
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover{
+    background:#f3e8ff;
+    border-color:#7c3aed;
+}
+
+.option input{
+    margin-right:10px;
+}
+
+
+/* =========================
+   SUBMIT
+========================= */
+
+.submit-area{
+    text-align:center;
+    margin:30px 0;
+}
+
+.submit-btn{
+    background:#0f766e;
+    color:white;
+    padding:15px 35px;
+    border:none;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.submit-btn:hover{
+    background:#115e59;
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+#resultSection{
+    display:none;
+    max-width:850px;
+    margin:50px auto;
+    padding:20px;
+}
+
+.result-box{
+    background:white;
+    padding:40px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.12);
+}
+
+.result-box h2{
+    color:#0f766e;
+    font-size:32px;
+    margin-bottom:20px;
+}
+
+.score{
+    font-size:45px;
+    font-weight:bold;
+    color:#0f766e;
+    margin:20px;
+}
+
+.rating{
+    font-size:25px;
+    font-weight:bold;
+    color:#ff9800;
+    margin:15px;
+}
+
+.result-message{
+    font-size:18px;
+    color:#555;
+    margin:20px 0;
+    line-height:1.6;
+}
+
+.answer-review{
+    margin:28px 0;
+    text-align:left;
+}
+
+.answer-review h3{
+    color:#0f766e;
+    margin-bottom:14px;
+}
+
+.review-item{
+    background:#fff7ed;
+    border-left:4px solid #f97316;
+    border-radius:8px;
+    padding:14px 16px;
+    margin:12px 0;
+    line-height:1.5;
+}
+
+.review-item p{
+    margin-top:6px;
+}
+
+.correct-answer{
+    color:#0f766e;
+    font-weight:bold;
+}
+
+
+/* RESULT STATS */
+
+.result-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin:30px 0;
+}
+
+.stat{
+    padding:20px;
+    background:#f4f7ff;
+    border-radius:10px;
+}
+
+.stat h3{
+    color:#7c3aed;
+    font-size:28px;
+}
+
+.stat p{
+    margin-top:5px;
+    color:#666;
+}
+
+
+/* RESULT ACTIONS */
+
+.result-actions{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+/* RESTART */
+
+.restart-btn{
+    background:#7c3aed;
+    color:white;
+    padding:13px 25px;
+    border:none;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.restart-btn:hover{
+    background:#6d28d9;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    background:#134e4a;
+    color:white;
+    text-align:center;
+    padding:25px;
+    margin-top:50px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    header{
+        flex-direction:column;
+        gap:12px;
+    }
+
+    nav a{
+        margin:5px;
+    }
+
+    .hero h1{
+        font-size:35px;
+    }
+
+    .quiz-header{
+        flex-direction:column;
+        gap:15px;
+        text-align:center;
+    }
+
+    .result-stats{
+        grid-template-columns:1fr;
+    }
+
+}
+
+/* Refreshed dashboard styling */
+body{background:#f5f7ff;color:#172033;line-height:1.5}
+header{background:rgba(19,78,74,.96);padding:16px max(6%, calc((100% - 1200px)/2));box-shadow:0 8px 24px rgba(15,23,42,.14)}
+.logo{letter-spacing:.3px}
+.hero{min-height:410px;background:linear-gradient(135deg,#102a43,#116466 60%,#7c3aed)}
+.hero::before{background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.15),transparent 32%),linear-gradient(125deg,rgba(11,32,54,.25),rgba(16,42,67,.78))}
+.hero h1{font-size:clamp(40px,6vw,64px);letter-spacing:-1.5px}
+.hero p{max-width:650px;margin:0 auto 25px;color:#e3f4f3;line-height:1.6}
+.start-btn,.submit-btn,.restart-btn{border-radius:12px;box-shadow:0 6px 15px rgba(15,23,42,.14);transition:transform .2s,box-shadow .2s}
+.start-btn:hover,.submit-btn:hover,.restart-btn:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(15,23,42,.2)}
+#topicSection{max-width:1220px;margin:36px auto}
+.topic-box{padding:clamp(20px,4vw,42px);border:1px solid #e4e9f2;border-radius:24px;box-shadow:0 18px 45px rgba(28,42,75,.08)}
+.topic-box h2{font-size:clamp(26px,4vw,36px);color:#143c56}
+.topic-box > p{margin-bottom:28px}
+.group-title{text-align:left;margin:28px 0 14px;color:#42536a;font-size:16px;text-transform:uppercase;letter-spacing:1px}
+.topic-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.language-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.topic-card{min-height:160px;padding:18px 15px;border:1px solid #e6eaf1;border-radius:16px;box-shadow:0 5px 16px rgba(28,42,75,.06);text-align:left}
+.topic-card.selected{background:#f6f2ff;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.13)}
+.topic-card .topic-icon{display:block;padding:0;margin-bottom:12px;font-size:28px;font-weight:400}
+.topic-card span:not(.topic-icon){display:block;padding:0;font-size:15px;line-height:1.35}
+.topic-card small{display:block;margin-top:9px;color:#738096;font-size:12px;line-height:1.4}
+.paper-picker{max-width:440px;margin:28px auto 22px;padding:18px;border:1px solid #e3e8f0;border-radius:16px;background:#f8fafc;text-align:left}
+.paper-picker label{display:block;margin-bottom:8px;color:#35445a;font-weight:700}
+.paper-picker select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#172033;font-size:15px}
+.paper-picker p{margin-top:8px;color:#64748b;font-size:13px}
+#quizSection,#resultSection{max-width:1000px}
+.quiz-header,.question-card,.result-box{border:1px solid #e7ebf2;border-radius:18px;box-shadow:0 12px 30px rgba(28,42,75,.08)}
+.question-card{padding:clamp(18px,4vw,30px)}
+.option{border-color:#e2e8f0;border-radius:10px;line-height:1.45}
+.option:has(input:checked){background:#f2edff;border-color:#8b5cf6}
+footer{background:#102a43}
+@media(max-width:900px){.topic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.language-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.topic-grid,.language-grid{grid-template-columns:1fr}.topic-card{min-height:120px}.topic-box{padding:20px 16px}.hero{padding:25px}}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+<div class="logo">
+💻 Quiz Buzz
+</div>
+
+<nav>
+
+<a href="#home" onclick="goHome(); return false;">Home</a>
+
+<a href="#topicSection" onclick="goToTopics(); return false;">Quiz</a>
+
+</nav>
+
+</header>
+
+
+
+<!-- =========================
+     HOME
+========================= -->
+
+<section class="hero" id="home">
+
+<div>
+
+<h1>Quiz Buzz</h1>
+
+<p>
+Practice competitive-exam subjects or prepare for interviews across 10 programming languages. Choose a difficulty and a 50-question paper.
+</p>
+
+<button class="start-btn"
+onclick="startQuiz()">
+
+Start Quiz
+
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================
+     TOPIC SELECTION
+========================= -->
+
+<section id="topicSection">
+
+<div class="topic-box">
+
+<h2>Choose Your Quiz Topic</h2>
+
+<p>Select a topic to see questions from that topic only.</p>
+
+<h3 class="group-title">Competitive exam practice</h3>
+<div class="topic-grid" role="group" aria-label="Competitive exam topics">
+<button class="topic-card selected" type="button" data-topic="General Knowledge" aria-pressed="true" onclick="selectTopic(this)"><span class="topic-icon">🌍</span><span>General Knowledge</span><small>50 questions · 10 papers</small></button>
+<button class="topic-card" type="button" data-topic="Social" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🏛️</span><span>Social Studies</span><small>50 questions · 10 papers</small></button>
+<button class="topic-card" type="button" data-topic="Science" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🧪</span><span>Science</span><small>50 questions · 10 papers</small></button>
+<button class="topic-card" type="button" data-topic="Technical" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🧠</span><span>Computer Science: Aptitude, Reasoning & Technical</span><small>50 questions · 10 papers</small></button>
+</div>
+<h3 class="group-title">Programming language interviews</h3>
+<div class="topic-grid language-grid" role="group" aria-label="Programming language interview topics">
+<button class="topic-card" type="button" data-topic="Python" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🐍</span><span>Python</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="Java" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">☕</span><span>Java</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="JavaScript" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🟨</span><span>JavaScript</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="C" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">©️</span><span>C</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="C++" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">➕</span><span>C++</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="C#" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">💠</span><span>C#</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="PHP" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🐘</span><span>PHP</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="Go" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🔷</span><span>Go</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="Swift" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🕊️</span><span>Swift</span><small>Interview questions</small></button>
+<button class="topic-card" type="button" data-topic="Kotlin" aria-pressed="false" onclick="selectTopic(this)"><span class="topic-icon">🟣</span><span>Kotlin</span><small>Interview questions</small></button>
+</div>
+<div class="paper-picker" id="paperPicker">
+<label for="levelSelect">Choose difficulty</label>
+<select id="levelSelect" aria-label="Choose quiz difficulty" onchange="updatePaperPicker()">
+<option value="easy">Easy · 4 papers</option>
+<option value="intermediate">Intermediate · 3 papers</option>
+<option value="hard">Hard · 3 papers</option>
+</select>
+<label for="paperSelect" style="margin-top:14px">Choose your 50-question paper</label>
+<select id="paperSelect" aria-label="Choose quiz paper" onchange="updatePaperAvailability()"></select>
+<p id="availabilityMessage" role="status" aria-live="polite"></p>
+</div>
+<button class="start-btn" id="startSelectedButton" onclick="beginSelectedQuiz()">
+Start Selected Quiz
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     QUIZ
+========================= -->
+
+<section id="quizSection">
+
+
+<div class="quiz-header">
+
+<div class="quiz-title">
+
+<h2 id="quizTitle">📝 Knowledge Challenge</h2>
+
+<p id="quizDetails">20 Minutes</p>
+
+</div>
+
+
+<div class="timer">
+
+⏱️ <span id="timer">20:00</span>
+
+</div>
+
+</div>
+
+
+
+<!-- PROGRESS -->
+
+<div class="progress-container">
+
+<div class="progress-bar"
+id="progressBar">
+
+</div>
+
+</div>
+
+
+
+<!-- QUESTIONS -->
+
+<div id="questionsContainer">
+
+</div>
+
+
+
+<!-- SUBMIT -->
+
+<div class="submit-area">
+
+<button class="submit-btn"
+onclick="submitQuiz()">
+
+Submit Quiz
+
+</button>
+
+</div>
+
+
+</section>
+
+
+
+<!-- =========================
+     RESULT
+========================= -->
+
+<section id="resultSection">
+
+<div class="result-box">
+
+<h2>🎯 Quiz Result</h2>
+
+
+<div class="score">
+
+<span id="score">0</span> / <span id="totalQuestions">10</span>
+
+</div>
+
+
+<div class="rating"
+id="rating">
+
+</div>
+
+
+<div class="result-stats">
+
+<div class="stat">
+
+<h3 id="correct">0</h3>
+
+<p>Correct</p>
+
+</div>
+
+
+<div class="stat">
+
+<h3 id="wrong">0</h3>
+
+<p>Wrong</p>
+
+</div>
+
+
+<div class="stat">
+
+<h3 id="percentage">0%</h3>
+
+<p>Percentage</p>
+
+</div>
+
+</div>
+
+
+<div class="result-message"
+id="resultMessage">
+
+</div>
+
+<div class="answer-review" id="answerReview" aria-live="polite"></div>
+
+<div class="result-actions">
+
+<button class="restart-btn" onclick="goHome()">
+🏠 Home
+</button>
+
+<button class="restart-btn" onclick="goToTopics()">
+📝 Quiz
+</button>
+
+<button class="restart-btn" onclick="beginSelectedQuiz()">
+🔄 Try This Topic Again
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+<p>
+© 2026 Quiz Buzz | Choose a topic. Test your knowledge.
+</p>
+
+</footer>
+
+
+
+<script>
+
+
+/* =====================================================
+   QUESTIONS
+===================================================== */
+
+const questions = [
+
+/* =========================
+   GENERAL KNOWLEDGE
+========================= */
+
+{
+category:"General Knowledge",
+
+question:"Which is the largest planet in our Solar System?",
+
+options:[
+"Earth",
+"Jupiter",
+"Mars",
+"Venus"
+],
+
+answer:1
+},
+
+
+{
+category:"General Knowledge",
+
+question:"What is the capital city of India?",
+
+options:[
+"Mumbai",
+"Chennai",
+"New Delhi",
+"Kolkata"
+],
+
+answer:2
+},
+
+
+{
+category:"General Knowledge",
+
+question:"Which organization is responsible for India's space missions?",
+
+options:[
+"DRDO",
+"ISRO",
+"NASA",
+"ESA"
+],
+
+answer:1
+},
+
+
+{
+category:"General Knowledge",
+
+question:"Which is the national animal of India?",
+
+options:[
+"Lion",
+"Elephant",
+"Bengal Tiger",
+"Peacock"
+],
+
+answer:2
+},
+
+
+{
+category:"General Knowledge",
+
+question:"Which ocean is the largest ocean on Earth?",
+
+options:[
+"Indian Ocean",
+"Atlantic Ocean",
+"Pacific Ocean",
+"Arctic Ocean"
+],
+
+answer:2
+},
+
+{
+category:"General Knowledge",
+question:"How many days are there in a leap year?",
+options:["364", "365", "366", "367"],
+answer:2
+},
+
+{
+category:"General Knowledge",
+question:"Which language is primarily spoken in Brazil?",
+options:["Spanish", "Portuguese", "French", "Italian"],
+answer:1
+},
+
+{
+category:"General Knowledge",
+question:"What is the currency of Japan?",
+options:["Won", "Yuan", "Yen", "Ringgit"],
+answer:2
+},
+
+{
+category:"General Knowledge",
+question:"Which is the tallest mountain above sea level?",
+options:["K2", "Mount Everest", "Kangchenjunga", "Lhotse"],
+answer:1
+},
+
+{
+category:"General Knowledge",
+question:"How many sides does a hexagon have?",
+options:["Five", "Six", "Seven", "Eight"],
+answer:1
+},
+
+{
+category:"General Knowledge",
+question:"What is the capital of Australia?",
+options:["Sydney", "Canberra", "Melbourne", "Perth"],
+answer:1
+},
+{
+category:"General Knowledge",
+question:"Which is the largest mammal in the world?",
+options:["African elephant", "Blue whale", "Giraffe", "Hippopotamus"],
+answer:1
+},
+{
+category:"General Knowledge",
+question:"How many colours are traditionally listed in a rainbow?",
+options:["Five", "Six", "Seven", "Eight"],
+answer:2
+},
+{
+category:"General Knowledge",
+question:"Which instrument is used to measure temperature?",
+options:["Barometer", "Thermometer", "Compass", "Altimeter"],
+answer:1
+},
+{
+category:"General Knowledge",
+question:"Which country is famous for the ancient pyramids of Giza?",
+options:["Egypt", "Greece", "Mexico", "India"],
+answer:0
+},
+{
+category:"General Knowledge",
+question:"What is the smallest prime number?",
+options:["0", "1", "2", "3"],
+answer:2
+},
+{
+category:"General Knowledge",
+question:"Which bird is often associated with delivering babies in folklore?",
+options:["Eagle", "Stork", "Owl", "Swan"],
+answer:1
+},
+{
+category:"General Knowledge",
+question:"What is the name of the imaginary line around Earth's middle?",
+options:["Equator", "Prime Meridian", "Tropic of Cancer", "Arctic Circle"],
+answer:0
+},
+{
+category:"General Knowledge",
+question:"Which metal is liquid at ordinary room temperature?",
+options:["Iron", "Mercury", "Copper", "Aluminium"],
+answer:1
+},
+{
+category:"General Knowledge",
+question:"How many minutes are in one hour?",
+options:["30", "45", "60", "90"],
+answer:2
+},
+
+/* =========================
+   SOCIAL
+========================= */
+
+{
+category:"Social",
+
+question:"Who is known as the Father of the Indian Constitution?",
+
+options:[
+"Mahatma Gandhi",
+"Dr. B. R. Ambedkar",
+"Jawaharlal Nehru",
+"Sardar Patel"
+],
+
+answer:1
+},
+
+
+{
+category:"Social",
+
+question:"How many Fundamental Rights are currently recognized in the Indian Constitution?",
+
+options:[
+"4",
+"5",
+"6",
+"8"
+],
+
+answer:2
+},
+
+
+{
+category:"Social",
+
+question:"Which branch of government makes laws?",
+
+options:[
+"Executive",
+"Legislature",
+"Judiciary",
+"Election Commission"
+],
+
+answer:1
+},
+
+
+{
+category:"Social",
+
+question:"The United Nations headquarters is located in which city?",
+
+options:[
+"London",
+"Paris",
+"New York",
+"Geneva"
+],
+
+answer:2
+},
+
+
+{
+category:"Social",
+
+question:"Which document is the supreme law of India?",
+
+options:[
+"Parliament Act",
+"Indian Constitution",
+"Criminal Code",
+"Government Policy"
+],
+
+answer:1
+},
+
+{
+category:"Social",
+question:"What is the minimum voting age in India?",
+options:["16", "18", "21", "25"],
+answer:1
+},
+
+{
+category:"Social",
+question:"How many houses does the Indian Parliament have?",
+options:["One", "Two", "Three", "Four"],
+answer:1
+},
+
+{
+category:"Social",
+question:"Which body conducts elections in India?",
+options:["Election Commission of India", "Supreme Court", "NITI Aayog", "Finance Commission"],
+answer:0
+},
+
+{
+category:"Social",
+question:"What is the capital of France?",
+options:["Rome", "Madrid", "Paris", "Berlin"],
+answer:2
+},
+
+{
+category:"Social",
+question:"Which river is traditionally regarded as sacred in India?",
+options:["Nile", "Ganga", "Thames", "Danube"],
+answer:1
+},
+
+{
+category:"Social",
+question:"What is the main purpose of a census?",
+options:["To count a country's population", "To elect judges", "To collect taxes at borders", "To write new laws"],
+answer:0
+},
+{
+category:"Social",
+question:"Which ocean lies to the south of India?",
+options:["Pacific Ocean", "Arctic Ocean", "Indian Ocean", "Atlantic Ocean"],
+answer:2
+},
+{
+category:"Social",
+question:"What is the name of India's lower house of Parliament?",
+options:["Rajya Sabha", "Lok Sabha", "Vidhan Parishad", "Gram Sabha"],
+answer:1
+},
+{
+category:"Social",
+question:"Which direction is opposite east on a compass?",
+options:["North", "South", "West", "North-east"],
+answer:2
+},
+{
+category:"Social",
+question:"What is a map legend used for?",
+options:["Explaining map symbols", "Measuring temperature", "Showing the map's author", "Listing population totals"],
+answer:0
+},
+{
+category:"Social",
+question:"Which institution interprets the law and settles legal disputes?",
+options:["Judiciary", "Legislature", "Cabinet", "Municipality"],
+answer:0
+},
+{
+category:"Social",
+question:"What is the elected head of a municipal corporation commonly called in India?",
+options:["Governor", "Mayor", "Chief Justice", "Speaker"],
+answer:1
+},
+{
+category:"Social",
+question:"Which continent is the Sahara Desert located in?",
+options:["Asia", "Africa", "Europe", "South America"],
+answer:1
+},
+{
+category:"Social",
+question:"What does a democratic election allow citizens to do?",
+options:["Choose their representatives", "Appoint every judge", "Write the national budget alone", "Change the country's borders"],
+answer:0
+},
+{
+category:"Social",
+question:"Which imaginary lines run east-west and measure distance north or south of the Equator?",
+options:["Longitudes", "Latitudes", "Meridians", "Time zones"],
+answer:1
+},
+
+/* =========================
+   SCIENCE
+========================= */
+
+{
+category:"Science",
+
+question:"What is the basic unit of life?",
+
+options:[
+"Atom",
+"Cell",
+"Tissue",
+"Organ"
+],
+
+answer:1
+},
+
+
+{
+category:"Science",
+
+question:"Which gas is most abundant in Earth's atmosphere?",
+
+options:[
+"Oxygen",
+"Carbon dioxide",
+"Nitrogen",
+"Hydrogen"
+],
+
+answer:2
+},
+
+
+{
+category:"Science",
+
+question:"What is the approximate speed of light in vacuum?",
+
+options:[
+"3 × 10⁸ m/s",
+"3 × 10⁵ m/s",
+"3 × 10³ m/s",
+"3 × 10¹⁰ m/s"
+],
+
+answer:0
+},
+
+
+{
+category:"Science",
+
+question:"Which organ pumps blood throughout the human body?",
+
+options:[
+"Lungs",
+"Brain",
+"Heart",
+"Kidney"
+],
+
+answer:2
+},
+
+
+{
+category:"Science",
+
+question:"What force keeps planets in orbit around the Sun?",
+
+options:[
+"Magnetic force",
+"Friction",
+"Gravity",
+"Electric force"
+],
+
+answer:2
+},
+
+{
+category:"Science",
+question:"At what temperature does water freeze at standard pressure?",
+options:["0°C", "10°C", "32°C", "100°C"],
+answer:0
+},
+
+{
+category:"Science",
+question:"Which part of a plant absorbs most water from the soil?",
+options:["Flower", "Leaf", "Root", "Stem"],
+answer:2
+},
+
+{
+category:"Science",
+question:"What is the chemical symbol for oxygen?",
+options:["Ox", "O", "Og", "On"],
+answer:1
+},
+
+{
+category:"Science",
+question:"Which planet is known as the Red Planet?",
+options:["Venus", "Mars", "Saturn", "Mercury"],
+answer:1
+},
+
+{
+category:"Science",
+question:"How many bones are in the typical adult human body?",
+options:["106", "206", "306", "406"],
+answer:1
+},
+
+{
+category:"Science",
+question:"Which star is at the centre of our Solar System?",
+options:["Sirius", "The Sun", "Polaris", "Alpha Centauri"],
+answer:1
+},
+{
+category:"Science",
+question:"What is the process by which plants make food using sunlight?",
+options:["Respiration", "Photosynthesis", "Digestion", "Fermentation"],
+answer:1
+},
+{
+category:"Science",
+question:"Which state of matter has a fixed shape and a fixed volume?",
+options:["Gas", "Liquid", "Solid", "Plasma"],
+answer:2
+},
+{
+category:"Science",
+question:"What is the chemical symbol for gold?",
+options:["Go", "Gd", "Au", "Ag"],
+answer:2
+},
+{
+category:"Science",
+question:"Which vitamin can the body produce when skin is exposed to sunlight?",
+options:["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K"],
+answer:2
+},
+{
+category:"Science",
+question:"What is the closest planet to the Sun?",
+options:["Venus", "Mercury", "Earth", "Mars"],
+answer:1
+},
+{
+category:"Science",
+question:"Which part of the human body is primarily responsible for breathing?",
+options:["Lungs", "Stomach", "Kidneys", "Pancreas"],
+answer:0
+},
+{
+category:"Science",
+question:"What is the boiling point of water at standard atmospheric pressure?",
+options:["50°C", "75°C", "100°C", "150°C"],
+answer:2
+},
+{
+category:"Science",
+question:"Which type of energy does a moving object have?",
+options:["Kinetic energy", "Chemical energy", "Nuclear energy", "Sound energy"],
+answer:0
+},
+{
+category:"Science",
+question:"What is the largest organ of the human body?",
+options:["Heart", "Liver", "Skin", "Lungs"],
+answer:2
+},
+
+/* =========================
+   TECHNICAL / COMPUTER SCIENCE
+========================= */
+
+{
+category:"Technical",
+
+question:"What does CPU stand for?",
+
+options:[
+"Central Processing Unit",
+"Computer Personal Unit",
+"Central Program Utility",
+"Computer Processing Utility"
+],
+
+answer:0
+},
+
+
+{
+category:"Technical",
+
+question:"Which data structure follows the LIFO principle?",
+
+options:[
+"Queue",
+"Stack",
+"Array",
+"Linked List"
+],
+
+answer:1
+},
+
+
+{
+category:"Technical",
+
+question:"Which language is widely used for AI and Machine Learning?",
+
+options:[
+"Python",
+"HTML",
+"CSS",
+"SQL"
+],
+
+answer:0
+},
+
+
+{
+category:"Technical",
+
+question:"What does SQL primarily allow users to do?",
+
+options:[
+"Edit images",
+"Manage and query databases",
+"Design web pages",
+"Create operating systems"
+],
+
+answer:1
+},
+
+
+{
+category:"Technical",
+
+question:"Which technology is used to create the structure of a web page?",
+
+options:[
+"Python",
+"HTML",
+"SQL",
+"Java"
+],
+
+answer:1
+},
+
+{
+category:"Technical",
+question:"What does RAM stand for?",
+options:["Read Access Memory", "Random Access Memory", "Rapid Application Module", "Remote Access Machine"],
+answer:1
+},
+
+{
+category:"Technical",
+question:"Which protocol is commonly used to secure web traffic?",
+options:["HTTP", "FTP", "HTTPS", "SMTP"],
+answer:2
+},
+
+{
+category:"Technical",
+question:"What does URL stand for?",
+options:["Uniform Resource Locator", "Universal Record Link", "Unified Routing Language", "User Reference List"],
+answer:0
+},
+
+{
+category:"Technical",
+question:"Which component is often called the computer's main circuit board?",
+options:["Hard drive", "Motherboard", "Power supply", "Graphics card"],
+answer:1
+},
+
+{
+category:"Technical",
+question:"Which of these is an example of an operating system?",
+options:["Linux", "HTML", "Wi-Fi", "USB"],
+answer:0
+},
+
+{
+category:"Technical",
+question:"What does GPU stand for?",
+options:["General Processing Utility", "Graphics Processing Unit", "Global Program Unit", "Graphical Power Utility"],
+answer:1
+},
+{
+category:"Technical",
+question:"Which type of memory loses its contents when power is turned off?",
+options:["RAM", "SSD", "Flash drive", "Blu-ray disc"],
+answer:0
+},
+{
+category:"Technical",
+question:"What does CSS primarily control on a web page?",
+options:["The page's appearance and layout", "Database storage", "Network routing", "Audio recording"],
+answer:0
+},
+{
+category:"Technical",
+question:"Which number system uses only 0 and 1?",
+options:["Decimal", "Binary", "Roman", "Hexadecimal"],
+answer:1
+},
+{
+category:"Technical",
+question:"What is the main purpose of a web browser?",
+options:["To display and interact with web pages", "To manufacture computer chips", "To cool a processor", "To create electricity"],
+answer:0
+},
+{
+category:"Technical",
+question:"Which device is commonly used to connect a computer to a Wi-Fi network?",
+options:["Network adapter", "Microphone", "Projector", "Scanner"],
+answer:0
+},
+{
+category:"Technical",
+question:"What does the abbreviation AI stand for?",
+options:["Automated Internet", "Artificial Intelligence", "Applied Interface", "Active Information"],
+answer:1
+},
+{
+category:"Technical",
+question:"Which file format is commonly used for portable documents?",
+options:["PDF", "MP3", "PNG", "CSV"],
+answer:0
+},
+{
+category:"Technical",
+question:"What is an algorithm?",
+options:["A step-by-step set of instructions", "A type of monitor", "A storage cable", "An internet connection"],
+answer:0
+},
+{
+category:"Technical",
+question:"Which unit is commonly used to measure digital file size?",
+options:["Liter", "Byte", "Watt", "Meter"],
+answer:1
+}
+
+];
+
+// Add 30 more carefully selected questions to each core exam subject.
+function addQuestionRows(category, rows){
+rows.trim().split("\n").forEach(function(row){
+const parts = row.split("|");
+questions.push({category:category, question:parts[0], answer:Number(parts[1]), options:parts[2].split("~")});
+});
+}
+
+addQuestionRows("General Knowledge", `
+Which is the largest continent by area?|0|Asia~Africa~Europe~South America
+Which country gifted the Statue of Liberty to the United States?|1|Spain~France~Italy~Canada
+What is the currency of the United Kingdom?|2|Euro~Dollar~Pound sterling~Franc
+Which planet is famous for its prominent ring system?|1|Mars~Saturn~Mercury~Earth
+How many players from one team are on court in basketball?|2|Four~Five~Six~Seven
+Which is the largest hot desert in the world?|0|Sahara~Gobi~Kalahari~Arabian
+Who wrote the play Hamlet?|1|Charles Dickens~William Shakespeare~Jane Austen~George Orwell
+What is the chemical formula for water?|0|H₂O~CO₂~O₂~NaCl
+Which country is known as the Land of the Rising Sun?|2|China~Thailand~Japan~South Korea
+How many degrees are in a right angle?|1|45~90~180~360
+Which is the world's largest island, excluding continents?|0|Greenland~Madagascar~Borneo~New Guinea
+What is the capital of Canada?|2|Toronto~Vancouver~Ottawa~Montreal
+Which sport uses a shuttlecock?|1|Tennis~Badminton~Squash~Table tennis
+Which blood group is commonly called the universal red-cell donor?|0|O negative~AB positive~A positive~B negative
+What is the smallest country in the world by area?|2|Monaco~Malta~Vatican City~San Marino
+How many squares are there on a standard chessboard?|0|64~48~72~81
+Which is the hardest naturally occurring mineral?|0|Diamond~Quartz~Topaz~Graphite
+What is the capital of Nepal?|2|Pokhara~Lalitpur~Kathmandu~Biratnagar
+Which gas is commonly used to fill party balloons safely?|1|Oxygen~Helium~Chlorine~Carbon monoxide
+How many sides does an octagon have?|2|Six~Seven~Eight~Nine
+Which instrument records earthquake waves?|0|Seismograph~Hygrometer~Anemometer~Odometer
+Who was the first person to walk on the Moon?|1|Yuri Gagarin~Neil Armstrong~Buzz Aldrin~Michael Collins
+Which ocean borders India's eastern coast?|2|Arabian Sea~Atlantic Ocean~Bay of Bengal~Red Sea
+What is the main ingredient in traditional hummus?|0|Chickpeas~Lentils~Rice~Potatoes
+Which is the largest bird by height?|1|Emu~Ostrich~Albatross~Penguin
+How many pieces does each player start with in chess?|0|16~12~20~24
+Which city is nicknamed the Big Apple?|2|Los Angeles~Chicago~New York City~Boston
+What is the freezing point of water in Fahrenheit?|1|0°F~32°F~100°F~212°F
+Which country has the maple leaf on its national flag?|0|Canada~Austria~Denmark~Finland
+Which is the nearest star to Earth?|2|Proxima Centauri~Sirius~The Sun~Polaris
+`);
+
+addQuestionRows("Social", `
+How many states does India have?|1|27~28~29~30
+What is the upper house of India's Parliament called?|0|Rajya Sabha~Lok Sabha~Vidhan Sabha~Gram Sabha
+Which body is responsible for interpreting India's Constitution?|2|Cabinet~Election Commission~Supreme Court~Planning Commission
+What is the capital of Japan?|1|Kyoto~Tokyo~Osaka~Hiroshima
+The Tropic of Cancer passes through which country?|0|India~Australia~Russia~Canada
+Which is the longest river in India by total length within the country?|2|Godavari~Yamuna~Ganga~Narmada
+The Indus Valley Civilization developed mainly along which river system?|1|Amazon~Indus~Danube~Nile
+What is the highest court in the United States?|0|Supreme Court~Court of Appeals~District Court~Family Court
+Which movement did Mahatma Gandhi launch in 1942?|2|Swadeshi Movement~Non-Cooperation Movement~Quit India Movement~Civil Disobedience Movement
+Which Indian institution audits government spending?|1|RBI~Comptroller and Auditor General~Election Commission~NITI Aayog
+What does GDP measure?|0|Value of final goods and services produced~Total population~Government debt only~Exports only
+Which line divides Earth into Northern and Southern Hemispheres?|2|Prime Meridian~Tropic of Capricorn~Equator~Arctic Circle
+Which continent has the most countries?|1|Asia~Africa~Europe~South America
+What is the main role of the Reserve Bank of India?|0|Central banking and monetary policy~Conducting elections~Making criminal laws~Managing the courts
+Which Indian freedom fighter was known as Netaji?|2|Bal Gangadhar Tilak~Bhagat Singh~Subhas Chandra Bose~Lala Lajpat Rai
+The 73rd Constitutional Amendment relates mainly to what?|1|Urban municipalities~Panchayati Raj institutions~Fundamental Duties~Emergency powers
+Which ocean lies west of India?|0|Arabian Sea~Bay of Bengal~South China Sea~Coral Sea
+What is a primary source in historical research?|2|A modern textbook~A fictional account~A document or object from the period studied~A present-day summary
+Which latitude marks the Arctic Circle approximately?|1|23.5° N~66.5° N~0°~90° S
+What is the main purpose of the United Nations General Assembly?|0|Provide a forum for member states~Command national armies~Set every country's tax rates~Elect local mayors
+Which Indian state has the largest area?|2|Madhya Pradesh~Uttar Pradesh~Rajasthan~Maharashtra
+What is the term for people moving into another country to live there?|1|Emigration~Immigration~Urbanization~Commuting
+Which soil is especially suitable for cotton cultivation in India?|0|Black soil~Laterite soil~Mountain soil~Desert soil
+Which is the world's largest democracy by population?|2|Brazil~United States~India~Indonesia
+In a democracy, sovereignty ultimately rests with whom?|1|The military~The people~The courts alone~A hereditary ruler
+Which Indian body recommends the distribution of tax revenues between the Union and states?|0|Finance Commission~UPSC~NITI Aayog~Lok Sabha Secretariat
+What is the capital of Bhutan?|2|Thimphu~Paro~Punakha~Phuentsholing
+Which map shows elevation using contour lines?|1|Political map~Topographic map~Road map~Weather map
+What does secularism generally mean in a state?|0|The state does not favor a religion~Only one faith is permitted~Religion controls all courts~Citizens cannot practice religion
+Which ancient trade route connected Asia with Europe?|2|Spice Route only~Royal Road~Silk Road~Appian Way
+`);
+
+addQuestionRows("Science", `
+What is the SI unit of force?|1|Joule~Newton~Pascal~Watt
+Which blood cells help the body fight infection?|0|White blood cells~Red blood cells~Platelets~Plasma cells
+What is the pH of a neutral solution at room temperature?|2|0~5~7~14
+Which part of a cell contains most of its genetic material?|1|Ribosome~Nucleus~Cell wall~Vacuole
+What is the SI unit of electric current?|0|Ampere~Volt~Ohm~Watt
+Which gas do plants absorb during photosynthesis?|2|Oxygen~Nitrogen~Carbon dioxide~Hydrogen
+What is the chemical symbol for sodium?|1|So~Na~S~Sd
+Which planet has the most confirmed moons as of recent astronomical counts?|0|Saturn~Earth~Mars~Venus
+What is the name of the change from liquid to gas at the surface?|2|Condensation~Freezing~Evaporation~Deposition
+Which vitamin is essential for normal blood clotting?|1|Vitamin A~Vitamin K~Vitamin C~Vitamin B12
+What is the SI unit of power?|0|Watt~Joule~Newton~Ampere
+Which organ filters blood and produces urine?|2|Liver~Lung~Kidney~Pancreas
+Which particle has a negative electric charge?|1|Proton~Electron~Neutron~Photon
+What is the chemical formula of table salt?|0|NaCl~KCl~HCl~NaOH
+Which layer of the atmosphere contains most weather phenomena?|2|Stratosphere~Mesosphere~Troposphere~Thermosphere
+What is the approximate value of acceleration due to gravity on Earth?|1|4.9 m/s²~9.8 m/s²~19.6 m/s²~98 m/s²
+Which simple machine is a seesaw an example of?|0|Lever~Pulley~Wheel and axle~Screw
+What is the basic unit of heredity?|2|Chromosome~Protein~Gene~Cell
+Which metal is the best electrical conductor among these?|1|Iron~Silver~Lead~Tin
+What is the process of cell division that produces two identical daughter cells?|0|Mitosis~Meiosis~Fertilization~Mutation
+Which part of the eye controls the amount of light entering?|2|Retina~Cornea~Iris~Lens
+What is the chemical symbol for iron?|1|Ir~Fe~In~I
+Which type of rock forms from cooled magma or lava?|0|Igneous~Sedimentary~Metamorphic~Fossil
+Which gas makes up most of Earth's atmosphere?|2|Oxygen~Argon~Nitrogen~Carbon dioxide
+What is the SI unit of frequency?|1|Decibel~Hertz~Tesla~Coulomb
+Which planet is tilted so dramatically that it appears to rotate on its side?|0|Uranus~Jupiter~Mars~Mercury
+Which part of the digestive system absorbs most nutrients?|2|Stomach~Large intestine~Small intestine~Esophagus
+What is the name for animals that maintain a nearly constant internal body temperature?|1|Ectotherms~Endotherms~Decomposers~Producers
+Which lens is used to correct myopia (short-sightedness)?|0|Concave lens~Convex lens~Cylindrical lens~Bifocal lens
+What is the main function of red blood cells?|2|Produce hormones~Digest fats~Transport oxygen~Fight bacteria
+`);
+
+addQuestionRows("Technical", `
+Which data structure uses FIFO ordering?|1|Stack~Queue~Tree~Heap
+What is the time complexity of binary search on a sorted array?|0|O(log n)~O(n)~O(n²)~O(1) always
+Which normal form removes partial dependency on a composite key?|1|1NF~2NF~3NF~BCNF only
+What does DNS translate into IP addresses?|1|MAC addresses~Domain names~File names~Port numbers
+Which OSI layer is responsible for routing packets?|0|Network layer~Session layer~Presentation layer~Physical layer
+What is a primary key in a relational database?|2|A field that permits duplicates~A nullable description~A unique row identifier~An encrypted password
+Which SQL command retrieves data from a table?|1|UPDATE~SELECT~ALTER~DROP
+What is the purpose of an operating system kernel?|0|Manage hardware and core system resources~Render web pages only~Compile every language~Store passwords in plain text
+Which logic gate outputs 1 only when both inputs are 1?|2|OR~NOT~AND~XOR
+What does OOP stand for?|1|Open Operating Protocol~Object-Oriented Programming~Ordered Output Process~Optional Object Package
+In aptitude, what is 15% of 200?|0|30~15~25~35
+A car travels 150 km in 3 hours. What is its average speed?|2|30 km/h~45 km/h~50 km/h~60 km/h
+Complete the pattern: 2, 6, 12, 20, 30, ...|1|40~42~44~48
+If all roses are flowers and some flowers fade quickly, what must be true?|0|All roses are flowers~All flowers are roses~All roses fade quickly~No roses fade
+A clock shows 3:00. What is the angle between its hands?|2|60°~75°~90°~120°
+What is the binary representation of decimal 10?|1|1001~1010~1100~1110
+Which HTTP status code usually means “Not Found”?|0|404~200~301~500
+What does ACID describe in database transactions?|2|A network protocol~A sorting algorithm~Transaction reliability properties~A programming language
+Which protocol assigns IP configuration automatically on a network?|1|DNS~DHCP~FTP~SSH
+What is the result of 1 AND 0 in Boolean logic?|0|0~1~10~Undefined
+Which SDLC phase defines what a system must do?|2|Deployment~Maintenance~Requirements analysis~Coding only
+What does a compiler generally do?|1|Runs source code line by line without translation~Translates source code into another form~Stores database rows~Routes network packets
+Which testing level checks individual functions or components?|0|Unit testing~Acceptance testing~System testing~Load testing
+Which technique helps prevent SQL injection?|2|Concatenate raw input~Disable indexes~Use parameterized queries~Store queries in comments
+What is the worst-case time complexity of merge sort?|1|O(n²)~O(n log n)~O(log n)~O(2ⁿ)
+In a right triangle, what is the square of the hypotenuse equal to?|0|Sum of squares of the other two sides~Difference of the two sides~Product of all sides~Twice the shortest side
+Which memory is typically volatile?|2|ROM~SSD~RAM~DVD
+What does a firewall primarily do?|1|Increase processor speed~Filter network traffic by rules~Back up source code~Compress images
+Which traversal of a binary search tree visits keys in sorted order?|0|In-order~Pre-order~Post-order~Level order only
+If 5 workers finish a job in 8 days, how many worker-days is the job?|2|13~25~40~80
+`);
+
+const languageQuestions = {
+Python: `What does PEP 8 describe?|Python style conventions~Python's package manager~A database format~A web protocol
+Which keyword defines a function?|def~func~function~define
+What does a list comprehension create?|A list from an iterable expression~A class hierarchy~A network socket~A dictionary key only
+Which built-in type is immutable?|tuple~list~set~dict
+What does __init__ typically define?|Object initialization method~Module entry point~Loop condition~Destructor only
+Which keyword handles an exception?|except~catch~rescue~handle
+What does the GIL primarily control in CPython?|Execution of Python bytecode by threads~Garbage collection settings only~Package downloads~File permissions
+Which structure stores key-value pairs?|dict~tuple~list~range
+What does with open(...) help ensure?|The file is closed when the block exits~The file is encrypted~The file is copied~The file is read-only
+Which keyword creates a generator function?|yield~return~await~lambda`,
+Java: `Which keyword declares a class in Java?|class~struct~type~object
+Which JVM component executes Java bytecode?|Java Virtual Machine~Java compiler only~JDK installer~Garbage collector only
+Which collection does not allow duplicate elements?|Set~List~ArrayList~Queue
+What does method overloading mean?|Same method name with different parameter lists~Replacing a superclass method~Hiding a field~Calling a method recursively
+Which keyword prevents a class from being subclassed?|final~static~private~volatile
+What is the purpose of an interface?|Define a contract of methods and constants~Store only local variables~Create a thread~Allocate native memory
+Which block runs after try/catch whether or not an exception occurs?|finally~finalize~finish~default
+What does == compare for object references?|Reference identity~Always deep value equality~Class names only~Hash codes only
+Which keyword is used to inherit a class?|extends~implements~inherits~super
+What does the garbage collector reclaim?|Objects no longer reachable~Every static field~All stack frames immediately~Source files`,
+JavaScript: `Which keyword declares a block-scoped variable that can be reassigned?|let~var only~const~static
+What does Promise.all do?|Fulfills when all promises fulfill; rejects if any promise rejects~Runs promises in separate processes~Cancels every promise~Converts promises to callbacks
+Which operator checks strict equality without type coercion?|===~==~=~!==
+What does Array.prototype.map return?|A new array of transformed elements~The first matching item~A sorted copy always~A boolean
+What is a closure?|A function retaining access to its lexical scope~A closed browser tab~A class constructor only~A JSON parser
+Which keyword pauses an async function until a promise settles?|await~yield~defer~pause
+What is the DOM?|A programming interface representing a document as objects~A JavaScript package manager~A database engine~A network protocol
+What does NaN mean?|Not a Number~Null as Number~New Array Name~Negative and Null
+Which method converts JSON text to a JavaScript value?|JSON.parse~JSON.stringify~JSON.convert~parseInt
+What does event bubbling describe?|An event propagating from a target toward ancestors~An event repeating forever~A promise resolving~A browser repaint`,
+C: `Which symbol ends a typical C statement?|;~:~.~#
+Which function is the conventional entry point of a C program?|main~start~init~program
+What does malloc allocate?|Dynamic memory~A file handle~A process ID~A constant
+Which header declares printf?|stdio.h~stdlib.h~string.h~math.h
+What does a pointer store?|A memory address~A floating-point value only~A source-code line~A loop count only
+Which operator accesses a struct member through a pointer?|->~.~&~::
+What does sizeof return?|Size in bytes~Number of elements always~Memory address~Bit value only
+Which function releases memory allocated by malloc?|free~delete~clear~remove
+What is undefined behavior?|Behavior for which the C standard gives no requirements~A compile-time warning only~A fixed runtime error~A library function
+Which format specifier is commonly used for an int in printf?|%d~%s~%f~%p`,
+"C++": `Which feature lets a derived class provide its own implementation of a virtual method?|Runtime polymorphism~Macro expansion~Multiple assignment~Link-time loading
+Which C++ cast is intended for checked downcasts in polymorphic hierarchies?|dynamic_cast~reinterpret_cast~const_cast~static_assert
+What is RAII?|Resource lifetime tied to object lifetime~A runtime array index~A networking standard~A sorting method
+Which smart pointer expresses exclusive ownership?|std::unique_ptr~std::shared_ptr~std::weak_ptr~std::auto_ptr only
+What does a virtual destructor help ensure?|Derived destructors run when deleting through a base pointer~Objects cannot be copied~Methods are inlined~A class has no subclasses
+Which header provides std::vector?|vector header~array header~list header~memory header
+What is a template used for?|Generic programming with types or values as parameters~Runtime reflection only~Memory mapping~Exception handling
+Which operator is used for scope resolution?|::~->~=>~##
+What does const on a member function indicate?|It does not modify the object's observable state~It cannot be called~It is executed at compile time~It returns a constant pointer only
+What does std::move primarily enable?|Casting to an rvalue reference for move operations~Copying every object~Deleting an object~Locking a thread`,
+"C#": `Which runtime commonly executes C# applications?|Common Language Runtime~Java Virtual Machine~CPython~Node.js
+Which keyword awaits an asynchronous operation?|await~yield~defer~sync
+What does a property provide?|Controlled access to data through get/set accessors~A database table~A namespace alias only~A thread lock
+Which type represents a nullable value type?|Nullable value type or T?~Optional type only~Null type~Maybe type only
+What does LINQ provide?|Query capabilities for data collections~A UI drawing engine~A compiler directive~A memory allocator
+Which keyword prevents a class from being inherited?|sealed~static~readonly~virtual
+What is an interface primarily used for?|Defining a contract that types can implement~Allocating arrays~Handling garbage collection~Declaring namespaces only
+Which statement disposes an IDisposable resource reliably?|using~lock~fixed~checked
+What does an extension method allow?|Adding callable methods to a type without modifying its source~Changing a type's base class at runtime~Creating a new operator~Overriding private methods
+Which access modifier allows access only within the containing type?|private~public~protected internal~global`,
+PHP: `Which opening tag is commonly used for PHP code?|<?php~<php>~<?~<script php>
+Which symbol prefixes a PHP variable?|$~@~#~&
+Which operator concatenates strings in PHP?|.~+~::~&&
+Which construct is commonly used to include a file once?|require_once~import_once~using_once~load_once
+Which superglobal contains query-string and form parameters?|$_GET~$_SERVER only~$_FILES~$_ENV
+What does PDO provide?|A consistent database access interface~A page layout engine~A compiler~A session cookie format
+Which keyword declares a class in PHP?|class~object~struct~type
+What does === check?|Value and type equality~Loose equality only~Assignment~Reference creation
+Which function encodes data for safe HTML output?|htmlspecialchars~serialize~var_dump~explode
+What is Composer mainly used for?|PHP dependency management~Image editing~Database indexing~Web server routing only`,
+Go: `Which keyword declares a package in Go?|package~module~namespace~crate
+How does Go commonly handle errors?|Return an error value and check it~Throw checked exceptions~Use null pointers only~Ignore errors by default
+Which keyword starts a goroutine?|go~async~thread~spawn
+What does a channel enable?|Communication and synchronization between goroutines~Class inheritance~Database queries~Memory allocation
+Which tool formats Go source code?|gofmt~gofix only~gobuildfmt~gofmt is not available
+How are exported identifiers distinguished in Go?|They start with an uppercase letter~They use an @ prefix~They are declared public~They end with an underscore
+What does defer do?|Schedules a call to run when the surrounding function returns~Starts a goroutine~Declares a constant~Recovers every error automatically
+Which construct is used for concurrent selection over channel operations?|select~switch only~choose~case
+What is a Go interface satisfied by?|Types implementing its methods implicitly~Explicit inheritance declarations~A special constructor~A package manifest
+What does := do inside a function?|Short variable declaration~Pointer dereference~Comparison~Channel receive only`,
+Swift: `Which keyword declares a constant in Swift?|let~var~const~static
+What does an Optional represent?|A value that may be absent (nil)~A constant value~A protocol extension~A thread
+Which syntax unwraps an optional safely in a conditional?|if let~force let~guard var~try let
+What is a protocol in Swift?|A blueprint of required properties and methods~A package manager~A memory region~A concrete-only class
+Which keyword introduces value types such as structs?|struct~record~value~object
+What does ARC manage?|Reference counts for class instances~Array sorting~Network requests~Compile-time macros
+Which keyword marks a function that can throw errors?|throws~throwable~error~catch
+What is a closure in Swift?|A self-contained block of functionality~A closed file handle~A class-only type~A compiler pass
+Which collection is ordered and allows duplicates?|Array~Set~Dictionary~Tuple
+What does guard require when its condition is false?|An early exit from the current scope~A retry loop~An exception automatically~A return value always`,
+Kotlin: `Which keyword declares a read-only local variable in Kotlin?|val~var~let~const
+Which keyword declares a class that can be subclassed?|open~sealed~final~static
+What is a data class designed to provide?|Convenient data-oriented methods such as equals and copy~Thread scheduling~Database tables~Native pointers
+Which feature safely accesses a nullable value?|Safe-call operator ?.~!! only~::~**
+What does a suspend function support?|Suspending without blocking a thread in coroutine contexts~Native compilation only~Class inheritance~File compression
+Which keyword creates a singleton declaration?|object~singleton~static~companion only
+How does Kotlin call Java code on the JVM?|Through Java interoperability~By translating Java to JavaScript only~It cannot call Java~Only through network APIs
+What does the Elvis operator ?: do?|Provides a fallback for a null expression~Compares object identity~Declares a nullable type~Casts unsafely
+What is a sealed class useful for?|Representing a restricted set of subclasses~Allowing unlimited multiple inheritance~Managing files~Replacing interfaces entirely
+Which keyword marks a function parameter that can be omitted via a named default?|A default value in the parameter declaration~optional~maybe~nil`
+};
+
+Object.keys(languageQuestions).forEach(function(language){
+languageQuestions[language].trim().split("\n").forEach(function(row){
+const parts = row.split("|");
+questions.push({category:language, question:parts[0], options:parts[1].split("~"), answer:0});
+});
+});
+
+/* Build ten disjoint 50-question papers for every topic. Existing authored
+   questions are kept first; generated calculation/reasoning questions fill
+   any remaining slots without copying a question into another paper. */
+function makePracticeQuestion(category, level, serial){
+const scale = level === "easy" ? 1 : level === "intermediate" ? 3 : 7;
+const seed = serial * scale + 17;
+const family = serial % 6;
+let prompt;
+let answer;
+
+if(family === 0){
+const base = 100 + seed * 20;
+const rates = [10, 20, 25, 50];
+const rate = rates[Math.floor(serial / 6) % rates.length];
+answer = base * rate / 100;
+prompt = "Find " + rate + "% of " + base + ".";
+}else if(family === 1){
+const a = seed + 4;
+const b = (seed % 13) + 3;
+const multiplier = (serial % 5) + 2;
+answer = (a + b) * multiplier;
+prompt = "Evaluate (" + a + " + " + b + ") × " + multiplier + ".";
+}else if(family === 2){
+const first = seed + 2;
+const difference = (serial % 9) + 2;
+const term = (serial % 8) + 8;
+answer = first + (term - 1) * difference;
+prompt = "An arithmetic sequence starts at " + first + " and increases by " + difference + ". What is term " + term + "?";
+}else if(family === 3){
+const start = seed + 10;
+const step = (serial % 11) + 2;
+const values = [start, start + step, start + step * 2];
+answer = start + step;
+prompt = "Find the average of " + values.join(", ") + ".";
+}else if(family === 4){
+const time = (serial % 8) + 2;
+const speed = seed + 15;
+const distance = speed * time;
+answer = speed;
+prompt = "A vehicle travels " + distance + " km in " + time + " hours. What is its average speed in km/h?";
+}else{
+const value = seed + 25;
+const binary = value.toString(2);
+answer = value;
+prompt = "Convert the binary number " + binary + " to decimal.";
+}
+
+let context;
+if(["Python", "Java", "JavaScript", "C", "C++", "C#", "PHP", "Go", "Swift", "Kotlin"].includes(category)){
+context = "In a " + category + " interview practice problem, ";
+}else if(category === "Science"){
+context = "Science calculation: ";
+}else if(category === "Social"){
+context = "Social-studies data and reasoning: ";
+}else if(category === "Technical"){
+context = "Computer-science aptitude and reasoning: ";
+}else{
+context = "Competitive-exam aptitude: ";
+}
+
+const distractors = [answer + 1, answer - 1, answer + 10].filter(function(value, index, values){
+return value !== answer && values.indexOf(value) === index;
+});
+while(distractors.length < 3){distractors.push(answer + distractors.length + 2);}
+const choices = [answer].concat(distractors.slice(0, 3));
+const correctIndex = serial % choices.length;
+const temp = choices[0];
+choices[0] = choices[correctIndex];
+choices[correctIndex] = temp;
+return {category:category, question:context + prompt, options:choices.map(String), answer:correctIndex, difficulty:level};
+}
+
+function expandQuestionBanks(){
+const topics = ["General Knowledge", "Social", "Science", "Technical", "Python", "Java", "JavaScript", "C", "C++", "C#", "PHP", "Go", "Swift", "Kotlin"];
+const completeBank = [];
+topics.forEach(function(topic, topicIndex){
+const authored = questions.filter(function(question){return question.category === topic;});
+const levels = [
+{difficulty:"easy", target:200},
+{difficulty:"intermediate", target:150},
+{difficulty:"hard", target:150}
+];
+let authoredOffset = 0;
+let generatedIndex = 1 + topicIndex * 1000;
+levels.forEach(function(level){
+const levelQuestions = authored.slice(authoredOffset, authoredOffset + level.target).map(function(question){
+return Object.assign({}, question, {options:question.options.slice(), difficulty:level.difficulty});
+});
+authoredOffset += levelQuestions.length;
+while(levelQuestions.length < level.target){
+levelQuestions.push(makePracticeQuestion(topic, level.difficulty, generatedIndex++));
+}
+completeBank.push.apply(completeBank, levelQuestions);
+});
+});
+questions.length = 0;
+questions.push.apply(questions, completeBank);
+}
+expandQuestionBanks();
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let activeQuestions = [];
+let selectedTopic = "General Knowledge";
+
+let timeLeft = 20 * 60;
+
+let timerInterval;
+
+let quizStarted = false;
+
+let quizSubmitted = false;
+
+
+
+/* =====================================================
+   START QUIZ
+===================================================== */
+
+function startQuiz(){
+    goToTopics();
+}
+
+function goHome(){
+    clearInterval(timerInterval);
+    quizStarted = false;
+    quizSubmitted = false;
+    timeLeft = 20 * 60;
+
+    document.querySelector(".hero").style.display = "flex";
+    document.getElementById("topicSection").style.display = "none";
+    document.getElementById("quizSection").style.display = "none";
+    document.getElementById("resultSection").style.display = "none";
+    document.getElementById("progressBar").style.width = "0%";
+    document.querySelector(".timer").style.background = "#dc2626";
+
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function goToTopics(){
+    clearInterval(timerInterval);
+    quizStarted = false;
+    quizSubmitted = false;
+
+    document.querySelector(".hero").style.display = "none";
+    document.getElementById("topicSection").style.display = "block";
+    document.getElementById("quizSection").style.display = "none";
+    document.getElementById("resultSection").style.display = "none";
+
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function getPaperRange(level, paperNumber){
+const firstPaper = level === "easy" ? 0 : level === "intermediate" ? 4 : 7;
+const globalPaperIndex = firstPaper + paperNumber - 1;
+return {start:globalPaperIndex * 50, end:(globalPaperIndex + 1) * 50};
+}
+
+function updatePaperPicker(){
+const select = document.getElementById("paperSelect");
+const level = document.getElementById("levelSelect").value;
+const topicQuestions = questions.filter(function(q){
+return q.category === selectedTopic;
+});
+const paperCount = level === "easy" ? 4 : 3;
+select.innerHTML = "";
+
+for(let paper = 1; paper <= paperCount; paper++){
+const range = getPaperRange(level, paper);
+const available = Math.max(0, Math.min(topicQuestions.length, range.end) - range.start);
+const option = document.createElement("option");
+option.value = range.start;
+option.textContent = level.charAt(0).toUpperCase() + level.slice(1) + " Paper " + paper + " · " + available + "/50 questions";
+option.disabled = available < 50;
+select.appendChild(option);
+}
+
+const firstAvailable = Array.from(select.options).find(function(option){
+return !option.disabled;
+});
+if(firstAvailable){
+select.value = firstAvailable.value;
+}
+updatePaperAvailability();
+}
+
+function updatePaperAvailability(){
+const select = document.getElementById("paperSelect");
+const message = document.getElementById("availabilityMessage");
+const startButton = document.getElementById("startSelectedButton");
+const topicCount = questions.filter(function(q){
+return q.category === selectedTopic;
+}).length;
+const selectedOption = select.options[select.selectedIndex];
+const canStart = Boolean(selectedOption && !selectedOption.disabled);
+startButton.disabled = !canStart;
+startButton.setAttribute("aria-disabled", String(!canStart));
+
+if(canStart){
+message.textContent = "Ready: this is one of 10 separate 50-question papers (4 Easy, 3 Intermediate, 3 Hard). Papers use non-overlapping question ranges.";
+}else{
+message.textContent = selectedTopic + " currently has " + topicCount + " unique questions loaded. A paper needs 50 questions; add " + Math.max(0, 50 - topicCount) + " more before this paper can start. No questions will be repeated to fill it.";
+}
+}
+
+function selectTopic(card){
+selectedTopic = card.dataset.topic;
+document.querySelectorAll(".topic-card").forEach(function(topicCard){
+const isSelected = topicCard === card;
+topicCard.classList.toggle("selected", isSelected);
+topicCard.setAttribute("aria-pressed", isSelected);
+});
+updatePaperPicker();
+document.getElementById("paperPicker").scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function updateTopicBankCounts(){
+document.querySelectorAll(".topic-card").forEach(function(card){
+const count = questions.filter(function(question){
+return question.category === card.dataset.topic;
+}).length;
+card.querySelector("small").textContent = count + " questions · 10 papers · 50 each";
+});
+}
+
+function beginSelectedQuiz(){
+const topicQuestions = questions.filter(function(q){
+return q.category === selectedTopic;
+});
+const level = document.getElementById("levelSelect").value;
+const selectedOption = document.getElementById("paperSelect").options[document.getElementById("paperSelect").selectedIndex];
+if(!selectedOption || selectedOption.disabled){
+updatePaperAvailability();
+return;
+}
+const start = Number(selectedOption.value);
+activeQuestions = topicQuestions.slice(start, start + 50).map(function(question){
+return {...question, options:question.options.slice()};
+});
+
+if(activeQuestions.length !== 50){
+updatePaperPicker();
+return;
+}
+
+activeQuestions.forEach(function(question){
+const correctOption = question.options[question.answer];
+for(let i = question.options.length - 1; i > 0; i--){
+const randomIndex = Math.floor(Math.random() * (i + 1));
+[question.options[i], question.options[randomIndex]] = [question.options[randomIndex], question.options[i]];
+}
+question.answer = question.options.indexOf(correctOption);
+});
+
+quizStarted = true;
+quizSubmitted = false;
+document.getElementById("topicSection").style.display="none";
+document.getElementById("quizSection").style.display="block";
+document.getElementById("resultSection").style.display="none";
+document.getElementById("quizTitle").innerText = "📝 " + selectedTopic + " · " + level.charAt(0).toUpperCase() + level.slice(1) + " · " + selectedOption.textContent.split(" · ")[0];
+document.getElementById("quizDetails").innerText = "50 Questions • 20 Minutes";
+createQuestions();
+startTimer();
+window.scrollTo({top:0, behavior:"smooth"});
+}
+
+updateTopicBankCounts();
+updatePaperPicker();
+
+
+
+/* =====================================================
+   CREATE QUESTIONS
+===================================================== */
+
+function createQuestions(){
+
+const container =
+document.getElementById("questionsContainer");
+
+container.innerHTML="";
+
+
+activeQuestions.forEach(function(q,index){
+
+let html = `
+
+<div class="question-card">
+
+<div class="question-number">
+
+Question ${index+1} of ${activeQuestions.length}
+
+<br>
+
+<small>
+Category: ${q.category}
+</small>
+
+</div>
+
+
+<div class="question">
+
+${q.question}
+
+</div>
+
+`;
+
+
+q.options.forEach(function(option,optionIndex){
+
+html += `
+
+<label class="option">
+
+<input
+
+type="radio"
+
+name="question${index}"
+
+value="${optionIndex}"
+
+onchange="updateProgress()">
+
+${String.fromCharCode(65 + optionIndex)}.
+
+${option}
+
+</label>
+
+`;
+
+});
+
+
+html += `
+
+</div>
+
+`;
+
+container.innerHTML += html;
+
+});
+
+}
+
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+function startTimer(){
+
+clearInterval(timerInterval);
+
+timeLeft = 20 * 60;
+
+updateTimerDisplay();
+
+
+timerInterval = setInterval(function(){
+
+timeLeft--;
+
+updateTimerDisplay();
+
+
+if(timeLeft <= 0){
+
+clearInterval(timerInterval);
+
+alert("⏰ Time is over! Your quiz will be submitted automatically.");
+
+submitQuiz();
+
+}
+
+},1000);
+
+}
+
+
+
+/* =====================================================
+   DISPLAY TIMER
+===================================================== */
+
+function updateTimerDisplay(){
+
+let minutes =
+Math.floor(timeLeft / 60);
+
+let seconds =
+timeLeft % 60;
+
+let displayMinutes =
+minutes < 10 ? "0"+minutes : minutes;
+
+let displaySeconds =
+seconds < 10 ? "0"+seconds : seconds;
+
+document.getElementById("timer").innerText =
+displayMinutes + ":" + displaySeconds;
+
+
+/* TIMER WARNING */
+
+if(timeLeft <= 300){
+
+document.querySelector(".timer").style.background =
+"#b91c1c";
+
+}
+
+}
+
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function updateProgress(){
+
+let answered=0;
+
+
+activeQuestions.forEach(function(q,index){
+
+const selected =
+document.querySelector(
+`input[name="question${index}"]:checked`
+);
+
+if(selected){
+
+answered++;
+
+}
+
+});
+
+
+let percentage =
+(answered / activeQuestions.length) * 100;
+
+
+document.getElementById("progressBar").style.width =
+percentage + "%";
+
+}
+
+
+
+/* =====================================================
+   SUBMIT QUIZ
+===================================================== */
+
+function submitQuiz(){
+
+if(quizSubmitted){
+
+return;
+
+}
+
+quizSubmitted=true;
+
+clearInterval(timerInterval);
+
+let score=0;
+
+
+activeQuestions.forEach(function(q,index){
+
+const selected =
+document.querySelector(
+`input[name="question${index}"]:checked`
+);
+
+
+if(selected){
+
+if(parseInt(selected.value) === q.answer){
+
+score++;
+
+}
+
+}
+
+});
+
+
+showResult(score);
+
+}
+
+
+
+/* =====================================================
+   SHOW RESULT
+===================================================== */
+
+function showResult(score){
+
+document.getElementById("quizSection").style.display="none";
+
+document.getElementById("resultSection").style.display="block";
+
+
+let wrong =
+activeQuestions.length - score;
+
+
+let percentage =
+Math.round((score / activeQuestions.length) * 100);
+
+
+document.getElementById("score").innerText =
+score;
+document.getElementById("totalQuestions").innerText =
+activeQuestions.length;
+
+
+document.getElementById("correct").innerText =
+score;
+
+
+document.getElementById("wrong").innerText =
+wrong;
+
+
+document.getElementById("percentage").innerText =
+percentage + "%";
+
+
+let rating="";
+
+let message="";
+
+
+if(percentage >= 85){
+
+rating="🏆 Excellent";
+message="Excellent performance! You have a strong understanding of this topic.";
+
+}
+
+else if(percentage >= 70){
+
+rating="🌟 Very Good";
+message="Very good! You know this topic well. Keep practicing to improve even more.";
+
+}
+
+else if(percentage >= 50){
+
+rating="👍 Good";
+message="Good attempt! Keep learning and practicing this topic.";
+
+}
+
+else if(percentage >= 30){
+
+rating="📚 Keep Practicing";
+message="You are making progress. Review this topic and try again.";
+
+}
+
+else{
+
+rating="🌱 Keep Learning";
+message="Keep learning the basics of this topic and give it another try.";
+
+}
+
+
+document.getElementById("rating").innerText =
+rating;
+
+
+document.getElementById("resultMessage").innerText =
+message;
+
+const answerReview = document.getElementById("answerReview");
+answerReview.innerHTML = "";
+const missedQuestions = activeQuestions.map(function(q, index){
+return {
+question: q,
+selected: document.querySelector(`input[name="question${index}"]:checked`)
+};
+}).filter(function(item){
+return !item.selected || parseInt(item.selected.value, 10) !== item.question.answer;
+});
+
+if(missedQuestions.length){
+const reviewHeading = document.createElement("h3");
+reviewHeading.textContent = "Review your incorrect or unanswered questions";
+answerReview.appendChild(reviewHeading);
+
+missedQuestions.forEach(function(item){
+const reviewItem = document.createElement("div");
+reviewItem.className = "review-item";
+
+const questionText = document.createElement("p");
+questionText.textContent = item.question.question;
+reviewItem.appendChild(questionText);
+
+const chosenAnswer = document.createElement("p");
+chosenAnswer.textContent = "Your answer: " + (item.selected
+? item.question.options[parseInt(item.selected.value, 10)]
+: "No answer selected");
+reviewItem.appendChild(chosenAnswer);
+
+const correctAnswer = document.createElement("p");
+correctAnswer.className = "correct-answer";
+correctAnswer.textContent = "Correct answer: " + item.question.options[item.question.answer];
+reviewItem.appendChild(correctAnswer);
+
+answerReview.appendChild(reviewItem);
+});
+}
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+
+/* =====================================================
+   RESTART
+===================================================== */
+
+function restartQuiz(){
+
+timeLeft = 20 * 60;
+
+quizSubmitted=false;
+
+document.getElementById("resultSection").style.display="none";
+
+document.querySelector(".hero").style.display="flex";
+
+document.getElementById("quizSection").style.display="none";
+
+document.getElementById("progressBar").style.width="0%";
+
+document.querySelector(".timer").style.background="#dc2626";
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+</script>
+
+
+</body>
+
+</html>
+```
